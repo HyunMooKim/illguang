@@ -1,3 +1,4 @@
+// script.js
 document.addEventListener("DOMContentLoaded", function() {
   fetch("header-footer.html")
       .then(response => {
@@ -5,16 +6,25 @@ document.addEventListener("DOMContentLoaded", function() {
           return response.text();
       })
       .then(data => {
-          document.body.insertAdjacentHTML("afterbegin", data);
-          document.body.insertAdjacentHTML("beforeend", data.match(/<footer>[\s\S]*<\/footer>/)[0]);
-          document.body.insertAdjacentHTML("beforeend", data.match(/<div class="floating-buttons">[\s\S]*<\/div>/)[0]);
-          document.body.insertAdjacentHTML("beforeend", data.match(/<div id="phonePopup"[\s\S]*<\/div>/)[0]);
+          // Insert only header at the top
+          const headerContent = data.match(/<header>[\s\S]*<\/header>/)[0];
+          document.body.insertAdjacentHTML("afterbegin", headerContent);
+
+          // Insert footer and other elements at the bottom
+          const footerContent = data.match(/<footer>[\s\S]*<\/footer>/)[0];
+          const floatingButtons = data.match(/<div class="floating-buttons">[\s\S]*<\/div>/)[0];
+          const phonePopup = data.match(/<div id="phonePopup"[\s\S]*<\/div>/)[0];
+          
+          document.body.insertAdjacentHTML("beforeend", footerContent);
+          document.body.insertAdjacentHTML("beforeend", floatingButtons);
+          document.body.insertAdjacentHTML("beforeend", phonePopup);
 
           // Add event listener for outside click
           document.addEventListener("click", function(event) {
               const popup = document.getElementById("phonePopup");
               const isClickInsidePopup = popup.contains(event.target);
-              const isCallButton = event.target.closest(".floating-btn") && event.target.closest(".floating-btn").getAttribute("onclick") === "showPhone()";
+              const isCallButton = event.target.closest(".floating-btn") && 
+                                 event.target.closest(".floating-btn").getAttribute("onclick") === "showPhone()";
 
               if (popup.style.display === "block" && !isClickInsidePopup && !isCallButton) {
                   hidePhone();
